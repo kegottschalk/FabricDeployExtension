@@ -1,0 +1,52 @@
+{
+    "manifestVersion": 1,
+    "id": "287D8266-98D1-41A2-B09A-F318F39CFCD7",
+    "name": "Fabric Deploy Tasks",
+    "version": "1.1.0",
+    "publisher": "KevinGottschalk",
+    "public": false,
+    "targets": [
+        {
+            "id": "Microsoft.VisualStudio.Services"
+        }
+    ],
+    "description": "A set of Pipeline Tasks for deploying MS Fabric artifacts",
+    "categories": [
+        "Azure Pipelines"
+    ],
+    "icons": {
+        "default": "images/extension-icon.png"
+    },
+    "files": [
+        {
+            "path": "src/deployReport",
+            "packagePath": "deployReport"
+        },
+        {
+            "path": "src/deploySemanticModel",
+            "packagePath": "deploySemanticModel"
+        }
+    ],
+    "contributions": [
+        {
+            "id": "deployReport",
+            "type": "ms.vss-distributed-task.task",
+            "targets": [
+                "ms.vss-distributed-task.tasks"
+            ],
+            "properties": {
+                "name": "deployReport"
+            }
+        },
+        {
+            "id": "deploySemanticModel",
+            "type": "ms.vss-distributed-task.task",
+            "targets": [
+                "ms.vss-distributed-task.tasks"
+            ],
+            "properties": {
+                "name": "deploySemanticModel"
+            }
+        }
+    ]
+}

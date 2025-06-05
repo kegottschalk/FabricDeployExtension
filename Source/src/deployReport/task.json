@@ -1,0 +1,129 @@
+{
+    "$schema": "https://raw.githubusercontent.com/Microsoft/azure-pipelines-task-lib/master/tasks.schema.json",
+    "id": "0D37DE20-DA33-4DCD-AF22-232A6D3CAB06",
+    "name": "FabricReportDeploy",
+    "friendlyName": "Fabric Report (pbip) Deploy" ,
+    "instanceNameFormat": "Fabric Report Deploy",
+    "description": "Deploy a Report in Power BI Project (.pbip) format to MS Fabric",
+    "helpMarkDown": "",
+    "category": "Build",
+    "author": "Kevin Gottschalk",
+    "version": {
+        "Major": 1,
+        "Minor": 1,
+        "Patch": 0
+    },
+    "groups": [
+        {
+            "name": "inputGroup",
+            "displayName": "Source",
+            "isExpanded": true
+        },
+        {
+            "name": "outputGroup",
+            "displayName": "Output",
+            "isExpanded": true
+        }
+    ],
+    "inputs": [
+        {
+            "name": "BaseSourcePath",
+            "type": "string",
+            "label": "Base Source Path",
+            "defaultValue": "",
+            "required": true,
+            "helpMarkDown": "Root folder where .pbip file is located",
+            "groupName": "inputGroup"
+        },
+        {
+            "name": "ReportFolderName",
+            "type": "string",
+            "label": "Report Folder Name",
+            "defaultValue": "",
+            "required": true,
+            "helpMarkDown": "Name of the <ReportName>.Report folder where the Report definition is located",
+            "groupName": "inputGroup"
+        },
+        {
+            "name": "ServicePrincipalAppID",
+            "type": "string",
+            "label": "Service Principal AppID",
+            "defaultValue": "",
+            "required": true,
+            "helpMarkDown": "Service Principal AppID used to obtain an Authentication Token",
+            "groupName": "inputGroup"
+        },
+        {
+            "name": "ServicePrincipalSecret",
+            "type": "string",
+            "label": "Service Principal Secret",
+            "defaultValue": "",
+            "required": true,
+            "helpMarkDown": "Service Principal Secret used to obtain an Authentication Token",
+            "groupName": "inputGroup"
+        },
+        {
+            "name": "TenantID",
+            "type": "string",
+            "label": "Tenant ID",
+            "defaultValue": "",
+            "required": true,
+            "helpMarkDown": "Azure Tenant ID used to obtain an Authentication Token",
+            "groupName": "inputGroup"
+        },
+        {
+            "name": "DeployEnvironmentName",
+            "type": "string",
+            "label": "Deploy Environment Name",
+            "defaultValue": "Env",
+            "required": false,
+            "helpMarkDown": "Name of the environment to deploy to, used for debugging/logging only",
+            "groupName": "inputGroup"
+        },
+        {
+            "name": "TargetWorkspaceName",
+            "type": "string",
+            "label": "Target Workspace Name",
+            "defaultValue": "",
+            "required": true,
+            "helpMarkDown": "Name of the Power BI Workspace to deploy to",
+            "groupName": "inputGroup"
+        },
+        {
+            "name": "WorkspaceAdminPrincipalID",
+            "type": "string",
+            "label": "Workspace Admin Principal ID",
+            "defaultValue": "",
+            "required": false,
+            "helpMarkDown": "Principal / Object ID to assign as a Workspace Admin to the Target Workspace",
+            "groupName": "inputGroup"
+        },
+        {
+            "name": "SemanticModelForReport",
+            "type": "string",
+            "label": "Semantic Model for Report",
+            "defaultValue": "",
+            "required": false,
+            "helpMarkDown": "The Power BI name of the Semantic Model to assign to this Report",
+            "groupName": "inputGroup"
+        },
+        {
+            "name": "Debug",
+            "type": "boolean",
+            "label": "Debug Messages",
+            "defaultValue": false,
+            "required": true,
+            "helpMarkDown": "Show debug messages during task execution",
+            "groupName": "inputGroup"
+        }
+    ],
+    "execution": {
+        "PowerShell3": {
+            "target": "entry.ps1",
+            "platforms": [
+                "windows"
+            ],
+            "workingDirectory": "$(currentDirectory)"
+        }
+    }
+}

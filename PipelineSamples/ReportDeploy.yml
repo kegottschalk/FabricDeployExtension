@@ -1,0 +1,78 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- dev
+
+pool:
+  vmImage: windows-latest
+
+variables:
+  artifactName: "SampleReport"
+  projectFolder: "Reports/SampleReport"
+  reportFolder: "SampleReport.Report"
+  semanticModelForReport: "Sample Semantic Model"
+  adminPrincipalId: "37859AF2-26AF-4FDF-A18E-458682D83765" #will assign the Entra ID principal / user with this ID as an admin on the workspace
+
+stages:
+- stage: Publish #This stage isn't entirely necessary, but I like to snapshot the code deployed as a Pipeline artifact
+  displayName: 'Publish Artifact'
+  jobs:
+  - job: Publish
+    displayName: 'Publish Artifact'
+
+    steps:
+    - task: CopyFiles@2 #copy  files to Artifact Staging, then publish them as a Pipeline artifact
+      displayName: 'Copy Files'
+      inputs:
+        SourceFolder: '$(Agent.BuildDirectory)\s\$(projectFolder)'
+        Contents: |
+          **
+          !.gitignore
+        TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+    - task: PublishPipelineArtifact@1
+      displayName: 'Publish Artifact'
+      inputs:
+        targetPath: '$(Build.ArtifactStagingDirectory)'
+        artifact: '$(artifactName)'
+
+- stage: Deploy
+  displayName: 'Deploy'
+  variables:
+  - group: 'KV_ServicePrincipal' #service principal values (ID, secret, Tenant)
+  - name: deployEnvironment
+    value: 'Dev'
+  - name: workspaceName
+    value: 'Sample Reports'
+
+  jobs:
+  - deployment: 'UpdatePBIItem${{ variables.ArtifactName }}'
+    displayName: 'Update PBI Item - ${{ variables.ArtifactName }}'
+    environment: '${{ variables.deployEnvironment }}'
+
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+          - checkout: none
+
+          - download: current
+            name: 'DownloadBuildArtifacts'
+            displayName: 'Download Build Artifacts'
+            artifact: '${{ variables.ArtifactName }}'
+  
+          - task: FabricReportDeploy@1
+            inputs:
+              BaseSourcePath: '$(Pipeline.Workspace)\$(artifactName)' #Pipeline variables
+              ReportFolderName: '${{ variables.reportFolder }}' #Pipeline variables
+              ServicePrincipalAppID: '$(ServicePrincipalAppID)' #from KV_ServicePrincipal
+              ServicePrincipalSecret: '$(ServicePrincipalSecret)' #from KV_ServicePrincipal
+              TenantID: '$(TenantID)' #from KV_ServicePrincipal
+              DeployEnvironmentName: '${{ variables.deployEnvironment }}' #Stage variables
+              TargetWorkspaceName: '${{ variables.workspaceName }}' #Stage variables
+              WorkspaceAdminPrincipalID: '${{ variables.adminPrincipalId }}' #Pipeline variables
+              SemanticModelForReport: '${{ variables.semanticModelForReport }}' #Pipeline variables
+              Debug: true
